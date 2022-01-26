@@ -9,7 +9,7 @@
  const diff = function(newList, oldList) {
     // lastIndex：即访问过元素的最右下标
     let lastIndex = 0;
-
+    
     // 遍历新数组
     for(let i = 0, len = newList.length; i < len; i++) {
         // 查找当前元素在旧数组的下标

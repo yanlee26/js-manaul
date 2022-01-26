@@ -6,8 +6,8 @@ function arrageArray(list) {
     const res = [] 
 
     function arrange(collector, arrToSplice) {
-      if (collector.length === len) { // 收集一组数据完成
-        res.push(collector.join('')) // dump 成字符串
+      if (collector.length === len) { 
+        res.push(collector.join('')) 
       } else {
             arrToSplice.forEach((item, index) => {
                 const newCollector = [...collector,item]
