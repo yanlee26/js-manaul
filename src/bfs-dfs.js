@@ -29,6 +29,7 @@ function deepTraversal(node) {
       const item = stack.pop(); // 后出
       nodeList.push(item.title);
       const children = item.children;
+      // 利用栈结构，倒序
       for (let i = children.length - 1; i >= 0; i--) {
         stack.push(children[i]); // 先进
       }
