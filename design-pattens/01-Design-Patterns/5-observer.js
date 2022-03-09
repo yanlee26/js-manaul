@@ -109,3 +109,7 @@ class PubSub {
 }
 
 const pubsub = new PubSub();
+pubsub.subscribe('a',()=>console.log('a'))
+pubsub.subscribe('a',()=>console.log('a1'))
+pubsub.subscribe('a',()=>console.log('a2'))
+pubsub.publish('a','hi')

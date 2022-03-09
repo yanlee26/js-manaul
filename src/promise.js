@@ -35,9 +35,9 @@
       如果 onFulfilled 或者 onRejected 抛出一个异常 e ，则 promise2 必须拒绝执行，并返回拒因 e
       如果 onFulfilled 不是函数且 promise1 成功执行， promise2 必须成功执行并返回相同的值
       如果 onRejected 不是函数且 promise1 拒绝执行， promise2 必须拒绝执行并返回相同的据因
-   *  */ 
-  
-  
+   *  */
+
+
   // 判断变量否为function
   const isFunction = variable => typeof variable === 'function'
   // 定义Promise的三种状态常量
@@ -50,33 +50,28 @@
       if (!isFunction(handle)) {
         throw new Error('MyPromise must accept a function as a parameter')
       }
-      // 添加状态
       this._status = PENDING
-      // 添加值
       this._value = undefined
-      // 添加成功回调函数队列
       this._fulfilledQueues = []
-      // 添加失败回调函数队列
       this._rejectedQueues = []
-      // 执行handle
       try {
         handle(this._resolve.bind(this), this._reject.bind(this))
       } catch (err) {
         this._reject(err)
       }
     }
-    // 添加resovle时执行的函数
+
     _resolve(val) {
       const run = () => {
         if (this._status !== PENDING) return
-        // 依次执行成功队列中的函数，并清空队列
+
         const runFulfilled = (value) => {
           let cb;
           while (cb = this._fulfilledQueues.shift()) {
             cb(value)
           }
         }
-        // 依次执行失败队列中的函数，并清空队列
+
         const runRejected = (error) => {
           let cb;
           while (cb = this._rejectedQueues.shift()) {
@@ -108,7 +103,7 @@
     // 添加reject时执行的函数
     _reject(err) {
       if (this._status !== PENDING) return
-      // 依次执行失败队列中的函数，并清空队列
+
       const run = () => {
         this._status = REJECTED
         this._value = err
@@ -120,13 +115,13 @@
       // 为了支持同步的Promise，这里采用异步调用
       setTimeout(run, 0)
     }
-    // 添加then方法
+
     then(onFulfilled, onRejected) {
       const {
         _value,
         _status
       } = this
-      // 返回一个新的Promise对象
+
       return new MyPromise((onFulfilledNext, onRejectedNext) => {
         // 封装一个成功时执行的函数
         let fulfilled = value => {
@@ -144,11 +139,11 @@
               }
             }
           } catch (err) {
-            // 如果函数执行出错，新的Promise对象的状态为失败
+
             onRejectedNext(err)
           }
         }
-        // 封装一个失败时执行的函数
+
         let rejected = error => {
           try {
             if (!isFunction(onRejected)) {
@@ -169,13 +164,12 @@
           }
         }
         switch (_status) {
-          // 当状态为pending时，将then方法回调函数加入执行队列等待执行
           case PENDING:
             this._fulfilledQueues.push(fulfilled)
             this._rejectedQueues.push(rejected)
             break
-            // 当状态已经改变时，立即执行对应的回调函数
-          case FULFILLED:
+
+            case FULFILLED:
             fulfilled(_value)
             break
           case REJECTED:
@@ -184,11 +178,11 @@
         }
       })
     }
-    // 添加catch方法
+
     catch (onRejected) {
       return this.then(undefined, onRejected)
     }
-    // finally
+
     finally(cb) {
       return this.then(
         value => MyPromise.resolve(cb()).then(() => value),
@@ -197,43 +191,35 @@
         })
       );
     }
-    // 添加静态resolve方法
+
     static resolve(value) {
-      // 如果参数是MyPromise实例，直接返回这个实例
+
       if (value instanceof MyPromise) return value
       return new MyPromise(resolve => resolve(value))
     }
-    // 添加静态reject方法
+
     static reject(value) {
       return new MyPromise((resolve, reject) => reject(value))
     }
-    // 添加静态all方法
+
     static all(list) {
       return new MyPromise((resolve, reject) => {
-        /**
-         * 返回值的集合
-         */
         let values = []
         let count = 0
         for (let [i, p] of list.entries()) {
-          // 数组参数如果不是MyPromise实例，先调用MyPromise.resolve
           this.resolve(p).then(res => {
-            values[i] = res
+            values[i] = res // 这样即可保证调用顺序了
             count++
-            // 所有状态都变成fulfilled时返回的MyPromise状态就变成fulfilled
             if (count === list.length) resolve(values)
           }, err => {
-            // 有一个被rejected时返回的MyPromise状态就变成rejected
             reject(err)
           })
         }
       })
     }
-    // 添加静态race方法
     static race(list) {
       return new MyPromise((resolve, reject) => {
         for (let p of list) {
-          // 只要有一个实例率先改变状态，新的MyPromise的状态就跟着改变
           try {
             this.resolve(p).then(res => {
               resolve(res)
@@ -250,26 +236,26 @@
 
   // NOTE： 获取成功及失败请求的处理
 
-  function getData(api){
-    return new Promise((resolve,reject) => {
+  function getData(api) {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        var ok = Math.random() > 0.5  // 模拟请求成功或失败
-        if(ok)
+        var ok = Math.random() > 0.5 // 模拟请求成功或失败
+        if (ok)
           resolve('get ' + api + ' data')
-        else{
+        else {
           resolve('error')
         }
-      },200)
+      }, 200)
     })
   }
   // 可以根据需要处理所有结果
-  function getDatas(arr){
+  function getDatas(arr) {
     var promises = arr.map(item => getData(item))
     return Promise.all(promises).then(values => {
-      values.map((v,index) => {
-        if(v == 'error'){
-          console.log('第' + (index+1) + '个请求失败')
-        }else{
+      values.map((v, index) => {
+        if (v == 'error') {
+          console.log('第' + (index + 1) + '个请求失败')
+        } else {
           console.log(v)
         }
       })
@@ -277,5 +263,5 @@
       console.log(error)
     })
   }
-  
-  getDatas(['./api1','./api2','./api3','./api4'])
+
+  getDatas(['./api1', './api2', './api3', './api4'])

@@ -11,6 +11,7 @@ function Promise(fn) {
   fn(resolve);
 }
 
+// 返回新的 Promise 并放到 cbs 队列里
 Promise.prototype.then = function(onResolved) {
   return new Promise((_resolve) => {
     this.cbs.push(() => {
